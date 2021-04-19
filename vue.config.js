@@ -1,3 +1,5 @@
+const registerRouter = require('./backend/router')
+
 module.exports = {
   css: {
     loaderOptions: {
@@ -8,6 +10,12 @@ module.exports = {
           @import "@/assets/scss/mixin.scss";
         `
       }
+    }
+  },
+  // 本地开发 启动node serve
+  devServer: {
+    before(app) {
+      registerRouter(app)
     }
   }
 }
