@@ -1,17 +1,17 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
   <m-header></m-header>
+  <m-tap></m-tap>
+  <!-- 路由视图渲染 -->
   <router-view/>
 </template>
 <script>
 import MHeader from '@/components/header/header.vue'
+import MTap from '@/components/tab/tab.vue'
   export default {
     name: 'app',
     components: {
-      MHeader
+      MHeader,
+      MTap
     },
     data() {
       return {
