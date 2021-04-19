@@ -1,7 +1,7 @@
 <template>
   <div class="slider" ref="rootRef">
     <div class="slider-group">
-      <div 
+      <div
         class="slider-page"
         v-for="item in sliders"
         :key="item.id"
@@ -12,7 +12,7 @@
       </div>
     </div>
     <div class="dots-wrapper">
-      <span 
+      <span
         class="dot"
         v-for="(item, index) in sliders"
         :key="item.id"
@@ -25,7 +25,7 @@
 
 <script>
 import { ref } from 'vue'
-import useSlider  from './use-slider'
+import useSlider from './use-slider'
 export default {
   name: 'm-slider',
   props: {
@@ -38,7 +38,7 @@ export default {
   },
   setup() {
     const rootRef = ref(null)
-    const { currentPageIndex} = useSlider(rootRef)
+    const { currentPageIndex } = useSlider(rootRef)
     return {
       rootRef,
       currentPageIndex
