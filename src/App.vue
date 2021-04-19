@@ -3,9 +3,23 @@
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link>
   </div>
+  <m-header></m-header>
   <router-view/>
 </template>
+<script>
+import MHeader from '@/components/header/header.vue'
+  export default {
+    name: 'app',
+    components: {
+      MHeader
+    },
+    data() {
+      return {
 
+      }
+    }
+  }
+</script>
 <style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
