@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend" v-loading:[loadingText]="loading">
+  <div class="recommend" v-loading="loading">
     <m-scroll class="recommend-content">
       <div>
         <div class="slider-wrapper">
