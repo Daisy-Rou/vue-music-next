@@ -1,8 +1,11 @@
 <template>
   <m-scroll
     class="index-list"
+    :probe-type="3"
+    @scroll="onScroll"
+    ref="scrollRef"
   >
-    <ul>
+    <ul class="group-container" ref="groupRef">
       <li
         v-for="group in data"
         :key="group.title"
@@ -21,11 +24,15 @@
         </ul>
       </li>
     </ul>
+    <div class="fixed">
+      <div class="fixed-title">{{fixedTitle}}</div>
+    </div>
   </m-scroll>
 </template>
 
 <script>
 import MScroll from '../scroll/scroll'
+import useFixed from './use-fixed'
 export default {
   name: 'index-list',
   components: {
@@ -38,17 +45,28 @@ export default {
         return []
       }
     }
+  },
+  setup(props) {
+    const { groupRef, onScroll, fixedTitle } = useFixed(props)
+    return {
+      fixedTitle,
+      onScroll,
+      groupRef
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .index-list {
-  // position: relative;
-  // width: 100%;
+  position: relative;
+  width: 100%;
   height: 100%;
   // overflow: hidden;
-  // background: $color-background;
+  background: $color-background;
+  .group-container {
+    overflow: hidden;
+  }
   .group {
     padding-bottom: 30px;
     .title {
@@ -73,6 +91,20 @@ export default {
         color: $color-text-l;
         font-size: $font-size-medium;
       }
+    }
+  }
+  .fixed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    .fixed-title {
+      height: 30px;
+      line-height: 30px;
+      padding-left: 20px;
+      font-size: $font-size-small;
+      color: $color-text-l;
+      background: $color-highlight-background;
     }
   }
 }

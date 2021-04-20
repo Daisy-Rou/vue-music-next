@@ -1,7 +1,7 @@
 <template>
   <div class="recommend" v-loading="loading">
     <m-scroll class="recommend-content">
-      <div>
+      <div class="container">
         <div class="slider-wrapper">
           <div class="slider-content">
             <m-slider v-if="sliders.length" :sliders="sliders"></m-slider>
@@ -73,7 +73,9 @@ export default {
   overflow: scroll;
   .recommend-content {
     height: 100%;
-    // overflow: hidden;
+    .container {
+      overflow: hidden;
+    }
     .slider-wrapper {
       position: relative;
       width: 100%;
