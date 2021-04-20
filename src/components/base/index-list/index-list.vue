@@ -5,7 +5,7 @@
     @scroll="onScroll"
     ref="scrollRef"
   >
-    <ul class="group-container" ref="groupRef">
+    <ul ref="groupRef">
       <li
         v-for="group in data"
         :key="group.title"
@@ -24,8 +24,24 @@
         </ul>
       </li>
     </ul>
-    <div class="fixed">
+    <div
+      v-show="fixedTitle"
+      class="fixed"
+      :style="fixedStyle"
+    >
       <div class="fixed-title">{{fixedTitle}}</div>
+    </div>
+    <div class="shortcut">
+      <ul>
+        <li
+          v-for="(item, index) in shortcutList"
+          :key="item"
+          :class="{'current': currentIndex === index}"
+          class="item"
+        >
+          {{item}}
+        </li>
+      </ul>
     </div>
   </m-scroll>
 </template>
@@ -33,6 +49,7 @@
 <script>
 import MScroll from '../scroll/scroll'
 import useFixed from './use-fixed'
+import useShortcut from './use-shortcut'
 export default {
   name: 'index-list',
   components: {
@@ -47,11 +64,15 @@ export default {
     }
   },
   setup(props) {
-    const { groupRef, onScroll, fixedTitle } = useFixed(props)
+    const { groupRef, onScroll, fixedTitle, fixedStyle, currentIndex } = useFixed(props)
+    const { shortcutList } = useShortcut(props)
     return {
       fixedTitle,
       onScroll,
-      groupRef
+      groupRef,
+      fixedStyle,
+      currentIndex,
+      shortcutList
     }
   }
 }
@@ -62,11 +83,8 @@ export default {
   position: relative;
   width: 100%;
   height: 100%;
-  // overflow: hidden;
+  overflow: hidden;
   background: $color-background;
-  .group-container {
-    overflow: hidden;
-  }
   .group {
     padding-bottom: 30px;
     .title {
@@ -105,6 +123,27 @@ export default {
       font-size: $font-size-small;
       color: $color-text-l;
       background: $color-highlight-background;
+    }
+  }
+  .shortcut {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    padding: 20px 0;
+    border-radius: 10px;
+    text-align: center;
+    background: $color-background-d;
+    font-family: Helvetica;
+    .item {
+      padding: 3px;
+      line-height: 1;
+      color: $color-text-l;
+      font-size: $font-size-small;
+      &.current {
+        color: $color-theme;
+      }
     }
   }
 }
