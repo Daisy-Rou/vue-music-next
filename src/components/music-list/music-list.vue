@@ -1,13 +1,17 @@
 <template>
   <div class="music-list">
-    <div class="back">
+    <div class="back" @click="goBack">
       <i class="icon-back"></i>
     </div>
     <h1 class="title">{{title}}</h1>
-    <div class="bg-image" :style="bgImageStyle">
+    <div
+      ref="bgImage"
+      class="bg-image"
+      :style="bgImageStyle"
+    >
       <div class="filter"></div>
     </div>
-    <m-scroll class="list">
+    <m-scroll v-loading="loading" class="list" :style="scrollStyle">
       <div class="song-list-wrapper">
         <song-list :songs="songs"></song-list>
       </div>
@@ -33,13 +37,33 @@ export default {
       }
     },
     title: String,
-    pic: String
+    pic: String,
+    loading: Boolean
   },
   computed: {
     bgImageStyle() {
       return {
         backgroundImage: `url(${this.pic})`
       }
+    },
+    scrollStyle() {
+      return {
+        top: `${this.imageHeight}px`
+      }
+    }
+  },
+  mounted() {
+    // 拿到图片高度
+    this.imageHeight = this.$refs.bgImage.clientHeight
+  },
+  data() {
+    return {
+      imageHeight: 0
+    }
+  },
+  methods: {
+    goBack() {
+      this.$router.go(-1)
     }
   }
 }
