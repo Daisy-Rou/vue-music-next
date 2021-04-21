@@ -9,9 +9,15 @@
       class="bg-image"
       :style="bgImageStyle"
     >
-      <div class="filter"></div>
+      <div class="filter" :style="filterStyle"></div>
     </div>
-    <m-scroll v-loading="loading" class="list" :style="scrollStyle">
+    <m-scroll
+      v-loading="loading"
+      class="list"
+      :style="scrollStyle"
+      probe-type="3"
+      @scroll="onScroll"
+    >
       <div class="song-list-wrapper">
         <song-list :songs="songs"></song-list>
       </div>
@@ -22,6 +28,9 @@
 <script>
 import SongList from '@/components/base/song-list/song-list'
 import MScroll from '@/components/base/scroll/scroll'
+
+// 顶部高度
+const RESERVED_HEIGHT = 40
 
 export default {
   name: 'music-list',
@@ -42,28 +51,72 @@ export default {
   },
   computed: {
     bgImageStyle() {
+      // 临时遍历缓存
+      const scrollY = this.scrollY
+      let zIndex = 0
+      let paddingTop = '70%'
+      let height = 0
+      let translateZ = 0
+
+      if (scrollY > this.maxTranslateY) {
+        zIndex = 10
+        paddingTop = 0
+        height = `${RESERVED_HEIGHT}px`
+        translateZ = 1
+      }
+      // 图片缩放
+      let scale = 1
+      if (scrollY < 0) {
+        scale = 1 + Math.abs(scrollY / this.imageHeight)
+      }
+
       return {
-        backgroundImage: `url(${this.pic})`
+        zIndex,
+        paddingTop,
+        height,
+        backgroundImage: `url(${this.pic})`,
+        transform: `scale(${scale})translateZ(${translateZ}px)`
+      }
+    },
+
+    filterStyle() {
+      let blur = 0
+      // 临时遍历缓存
+      const scrollY = this.scrollY
+      const imageHeight = this.imageHeight
+      if (scrollY >= 0) {
+        blur = Math.min(this.maxTranslateY / imageHeight, scrollY / imageHeight) * 20
+      }
+      return {
+        backdropFilter: `blur(${blur}px)`
       }
     },
     scrollStyle() {
+      const bottom = this.songs.length ? '60px' : '0'
       return {
-        top: `${this.imageHeight}px`
+        top: `${this.imageHeight}px`,
+        bottom
       }
     }
   },
   mounted() {
     // 拿到图片高度
     this.imageHeight = this.$refs.bgImage.clientHeight
+    this.maxTranslateY = this.imageHeight - RESERVED_HEIGHT
   },
   data() {
     return {
-      imageHeight: 0
+      imageHeight: 0, // 图片高度
+      scrollY: 0, // 距离顶部距离
+      maxTranslateY: 0 // 最大可滚动距离
     }
   },
   methods: {
     goBack() {
-      this.$router.go(-1)
+      this.$router.back()
+    },
+    onScroll(pos) {
+      this.scrollY = -pos.y
     }
   }
 }
@@ -104,8 +157,8 @@ export default {
     width: 100%;
     transform-origin: top;
     background-size: cover;
-    padding-top: 70%;
-    height: 0;
+    // padding-top: 70%;
+    // height: 0;
     .filter {
       position: absolute;
       top: 0;
@@ -120,6 +173,7 @@ export default {
     bottom: 0;
     width: 100%;
     z-index: 0;
+    // overflow: hidden;
     .song-list-wrapper {
       padding: 20px 30px;
       background: $color-background;
