@@ -30,7 +30,7 @@ export default {
         path: `/singer/${singer.mid}`
       })
     }
-}
+  }
 }
 </script>
 
