@@ -31,11 +31,18 @@
     >
       <div class="fixed-title">{{fixedTitle}}</div>
     </div>
-    <div class="shortcut">
-      <ul>
+    <!-- 事件委托 -->
+    <div
+      class="shortcut"
+      @touchstart.stop.prevent="onShortcutTouchStart"
+      @touchmove.stop.prevent="onShortcutTouchMove"
+      @touchend.stop.prevent="onShortcutTouchEnd"
+    >
+      <ul >
         <li
           v-for="(item, index) in shortcutList"
           :key="item"
+          :data-index="index"
           :class="{'current': currentIndex === index}"
           class="item"
         >
@@ -65,14 +72,18 @@ export default {
   },
   setup(props) {
     const { groupRef, onScroll, fixedTitle, fixedStyle, currentIndex } = useFixed(props)
-    const { shortcutList } = useShortcut(props)
+    const { shortcutList, onShortcutTouchStart, onShortcutTouchMove, onShortcutTouchEnd, scrollRef } = useShortcut(props, groupRef)
     return {
       fixedTitle,
       onScroll,
       groupRef,
       fixedStyle,
       currentIndex,
-      shortcutList
+      shortcutList,
+      onShortcutTouchStart,
+      onShortcutTouchMove,
+      onShortcutTouchEnd,
+      scrollRef
     }
   }
 }
