@@ -15,7 +15,7 @@
         <div class="bottom">
           <div class="operators">
             <div class="icon i-left">
-              <i class="icon-sequence"></i>
+              <i @click="changeMode" :class="modeIcon"></i>
             </div>
             <div class="icon i-left" :class="disableCls">
               <i @click="prev" class="icon-prev"></i>
@@ -45,7 +45,7 @@
 
 <script>
 import { computed, watch, ref } from 'vue'
-// import { PLAY_MODE } from '@/assets/base/js/constant'
+import useMode from './use-mode'
 import { useStore } from 'vuex'
 
 export default {
@@ -56,20 +56,29 @@ export default {
 
     const store = useStore()
     const fullScreen = computed(() => store.state.fullScreen)
+
     const currentSong = computed(() => store.getters.currentSong)
+
     // 播放状态
     const playing = computed(() => store.state.playing)
+
     // 根据播放状态展示不同图标
     const playIcon = computed(() => {
       return playing.value ? 'icon-pause' : 'icon-play'
     })
+
     // 获取当前播放歌曲的索引
     const currentIndex = computed(() => store.state.currentIndex)
+
     // 获取当前播放歌曲列表
     const playList = computed(() => store.state.playList)
+
+    // 禁用样式
     const disableCls = computed(() => {
       return songReady.value ? '' : 'disable'
     })
+    // 切换播放图标
+    const { modeIcon, changeMode } = useMode()
 
     // 当前播放歌曲
     watch(currentSong, (newSong) => {
@@ -95,6 +104,7 @@ export default {
       store.commit('setFullScreen', false)
     }
 
+    // 切换歌曲播放状态
     function togglePlay() {
       if (!songReady.value) {
         return
@@ -159,6 +169,7 @@ export default {
       }
     }
 
+    // 循环
     function loop() {
       const audioEl = audioRef.value
       audioEl.currentIndex = 0
@@ -177,7 +188,9 @@ export default {
       next,
       canplay,
       disableCls,
-      error
+      error,
+      changeMode,
+      modeIcon
     }
   }
 }
