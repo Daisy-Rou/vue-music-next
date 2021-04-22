@@ -9,6 +9,19 @@
       class="bg-image"
       :style="bgImageStyle"
     >
+      <div
+        class="play-btn-wrapper"
+        :style="playBtnStyle"
+      >
+        <div
+          class="play-btn"
+          v-show="songs.length > 0"
+          @click="random"
+        >
+          <i class="icon-play"></i>
+          <span class="text">随机播放全部</span>
+        </div>
+      </div>
       <div class="filter" :style="filterStyle"></div>
     </div>
     <m-scroll
@@ -60,6 +73,16 @@ export default {
       return !this.loading && !this.songs.length
     },
 
+    playBtnStyle() {
+      let display = ''
+      if (this.scrollY >= this.maxTranslateY) {
+        display = 'none'
+      }
+      return {
+        display
+      }
+    },
+
     bgImageStyle() {
       // 临时遍历缓存
       const scrollY = this.scrollY
@@ -102,10 +125,10 @@ export default {
       }
     },
     scrollStyle() {
-      const bottom = this.songs.length ? '60px' : '0'
+      // const bottom = this.songs.length ? '60px' : '0'
       return {
-        top: `${this.imageHeight}px`,
-        bottom
+        top: `${this.imageHeight}px`
+        // bottom
       }
     }
   },
@@ -134,9 +157,13 @@ export default {
         index
       })
     },
+    random() {
+      this.randomPlay(this.songs)
+    },
     // 派发事件
     ...mapActions([
-      'selectPlay'
+      'selectPlay',
+      'randomPlay'
     ])
   }
 }
@@ -179,6 +206,34 @@ export default {
     background-size: cover;
     // padding-top: 70%;
     // height: 0;
+    .play-btn-wrapper {
+      position: absolute;
+      bottom: 20px;
+      z-index: 10;
+      width: 100%;
+      .play-btn {
+        box-sizing: border-box;
+        width: 135px;
+        padding: 7px 0;
+        margin: 0 auto;
+        text-align: center;
+        border: 1px solid $color-theme;
+        color: $color-theme;
+        border-radius: 100px;
+        font-size: 0;
+      }
+      .icon-play {
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 6px;
+        font-size: $font-size-medium-x;
+      }
+      .text {
+        display: inline-block;
+        vertical-align: middle;
+        font-size: $font-size-small;
+      }
+    }
     .filter {
       position: absolute;
       top: 0;
