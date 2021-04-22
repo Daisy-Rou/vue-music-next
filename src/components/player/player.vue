@@ -17,13 +17,13 @@
             <div class="icon i-left">
               <i class="icon-sequence"></i>
             </div>
-            <div class="icon i-left">
+            <div class="icon i-left" :class="disableCls">
               <i @click="prev" class="icon-prev"></i>
             </div>
-            <div class="icon i-center">
+            <div class="icon i-center" :class="disableCls">
               <i :class="playIcon" @click="togglePlay"></i>
             </div>
-            <div class="icon i-right">
+            <div class="icon i-right" :class="disableCls">
               <i @click="next" class="icon-next"></i>
             </div>
             <div class="icon i-right">
@@ -36,6 +36,8 @@
     <audio
       ref="audioRef"
       @pause="pause"
+      @canplay="canplay"
+      @error="error"
     >
     </audio>
   </div>
@@ -50,6 +52,7 @@ export default {
   name: 'player',
   setup() {
     const audioRef = ref(null)
+    const songReady = ref(false)
 
     const store = useStore()
     const fullScreen = computed(() => store.state.fullScreen)
@@ -64,12 +67,16 @@ export default {
     const currentIndex = computed(() => store.state.currentIndex)
     // 获取当前播放歌曲列表
     const playList = computed(() => store.state.playList)
+    const disableCls = computed(() => {
+      return songReady.value ? '' : 'disable'
+    })
 
     // 当前播放歌曲
     watch(currentSong, (newSong) => {
       if (!newSong.id || !newSong.url) {
         return
       }
+      songReady.value = false
       const audioEl = audioRef.value
       audioEl.src = newSong.url
       audioEl.play()
@@ -77,6 +84,9 @@ export default {
 
     // 监听歌曲播放状态
     watch(playing, (newPlaying) => {
+      if (!songReady.value) {
+        return
+      }
       const audioEl = audioRef.value
       newPlaying ? audioEl.play() : audioEl.pause()
     })
@@ -86,6 +96,9 @@ export default {
     }
 
     function togglePlay() {
+      if (!songReady.value) {
+        return
+      }
       store.commit('setPlayingState', !playing.value)
     }
 
@@ -94,10 +107,21 @@ export default {
       store.commit('setPlayingState', false)
     }
 
+    function canplay() {
+      if (songReady.value) {
+        return
+      }
+      songReady.value = true
+    }
+
+    function error() {
+      songReady.value = true
+    }
+
     // 前一首
     function prev() {
       const list = playList.value
-      if (!list.length) {
+      if (!songReady.value || !list.length) {
         return
       }
       // 只有一首歌的情况下
@@ -118,7 +142,7 @@ export default {
     // 后一首
     function next() {
       const list = playList.value
-      if (!list.length) {
+      if (!songReady.value || !list.length) {
         return
       }
       if (list.length === 1) {
@@ -150,7 +174,10 @@ export default {
       togglePlay,
       pause,
       prev,
-      next
+      next,
+      canplay,
+      disableCls,
+      error
     }
   }
 }
