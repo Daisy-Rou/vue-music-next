@@ -26,7 +26,7 @@ const mutations = {
 
   // 设置是否全屏展示
   setFullScreen(state, fullScreen) {
-    state.fullscreen = fullScreen
+    state.fullScreen = fullScreen
   }
 }
 

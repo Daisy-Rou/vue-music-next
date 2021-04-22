@@ -7,16 +7,19 @@
       <component  :is="Component" />
     </transition>
   </router-view> -->
-  <router-view/>
+  <router-view />
+  <player></player>
 </template>
 <script>
 import MHeader from '@/components/header/header.vue'
 import MTap from '@/components/tab/tab.vue'
+import Player from '@/components/player/player.vue'
   export default {
     name: 'app',
     components: {
       MHeader,
-      MTap
+      MTap,
+      Player
     },
     data() {
       return {
