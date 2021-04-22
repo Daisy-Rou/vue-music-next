@@ -13,6 +13,7 @@
     </div>
     <m-scroll
       v-loading="loading"
+      v-no-result:[noResultText]="noResult"
       class="list"
       :style="scrollStyle"
       probe-type="3"
@@ -47,9 +48,17 @@ export default {
     },
     title: String,
     pic: String,
-    loading: Boolean
+    loading: Boolean,
+    noResultText: {
+      type: String,
+      default: '抱歉，没有找到可播放的歌曲'
+    }
   },
   computed: {
+    noResult() {
+      return !this.loading && !this.songs.length
+    },
+
     bgImageStyle() {
       // 临时遍历缓存
       const scrollY = this.scrollY
