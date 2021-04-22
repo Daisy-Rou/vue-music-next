@@ -2,6 +2,11 @@
   <m-header></m-header>
   <m-tap></m-tap>
   <!-- 路由视图渲染 -->
+  <!-- <router-view v-slot="{ Component }">
+    <transition name="slide">
+      <component  :is="Component" />
+    </transition>
+  </router-view> -->
   <router-view/>
 </template>
 <script>

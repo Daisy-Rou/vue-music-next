@@ -49,6 +49,10 @@ export default {
     }
   },
   async created() {
+    if (!this.computedSinger) {
+      const path = this.$route.matched[0].path
+      this.$router.push({ path })
+    }
     const result = await getSingerDetail(this.computedSinger)
     this.songs = await processSongs(result.songs)
     this.loading = false
