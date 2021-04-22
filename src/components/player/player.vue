@@ -18,13 +18,13 @@
               <i class="icon-sequence"></i>
             </div>
             <div class="icon i-left">
-              <i class="icon-prev"></i>
+              <i @click="prev" class="icon-prev"></i>
             </div>
             <div class="icon i-center">
               <i :class="playIcon" @click="togglePlay"></i>
             </div>
             <div class="icon i-right">
-              <i class="icon-next"></i>
+              <i @click="next" class="icon-next"></i>
             </div>
             <div class="icon i-right">
               <i class="icon-favorite"></i>
@@ -60,6 +60,10 @@ export default {
     const playIcon = computed(() => {
       return playing.value ? 'icon-pause' : 'icon-play'
     })
+    // 获取当前播放歌曲的索引
+    const currentIndex = computed(() => store.state.currentIndex)
+    // 获取当前播放歌曲列表
+    const playList = computed(() => store.state.playList)
 
     // 当前播放歌曲
     watch(currentSong, (newSong) => {
@@ -90,6 +94,53 @@ export default {
       store.commit('setPlayingState', false)
     }
 
+    // 前一首
+    function prev() {
+      const list = playList.value
+      if (!list.length) {
+        return
+      }
+      // 只有一首歌的情况下
+      if (list.length === 1) {
+        loop()
+      } else {
+        let index = currentIndex.value - 1
+        if (index === -1) {
+          index = list.length - 1
+        }
+        store.commit('setCurrentIndex', index)
+        if (!playing.value) {
+          store.commit('setPlayingState', true)
+        }
+      }
+    }
+
+    // 后一首
+    function next() {
+      const list = playList.value
+      if (!list.length) {
+        return
+      }
+      if (list.length === 1) {
+        loop()
+      } else {
+        let index = currentIndex.value + 1
+        if (index === list.length) {
+          index = 0
+        }
+        store.commit('setCurrentIndex', index)
+        if (!playing.value) {
+          store.commit('setPlayingState', true)
+        }
+      }
+    }
+
+    function loop() {
+      const audioEl = audioRef.value
+      audioEl.currentIndex = 0
+      audioEl.play()
+    }
+
     return {
       audioRef,
       fullScreen,
@@ -97,7 +148,9 @@ export default {
       goBack,
       playIcon,
       togglePlay,
-      pause
+      pause,
+      prev,
+      next
     }
   }
 }
