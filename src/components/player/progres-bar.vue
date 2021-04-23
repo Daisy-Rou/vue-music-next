@@ -1,8 +1,21 @@
 <template>
-  <div class="progress-bar">
+  <div
+    class="progress-bar"
+    @click="onClick"
+  >
     <div class="bar-inner">
-      <div class="progress" :style="progressStyle"></div>
-      <div class="progress-btn-wrapper" :style="btnStyle">
+      <div
+        class="progress"
+        :style="progressStyle"
+        ref="progressRef"
+      ></div>
+      <div
+        class="progress-btn-wrapper"
+        :style="btnStyle"
+        @touchstart.prevent="onTouchStart"
+        @touchmove.prevent="onTouchMove"
+        @touchend.prevent="onTouchEnd"
+      >
         <div class="progress-btn"></div>
       </div>
     </div>
@@ -14,6 +27,7 @@ const progressBtnWidth = 16
 
 export default {
   name: 'progress-bar',
+  emits: ['progress-changing', 'progress-changed'],
   props: {
     progress: {
       type: Number,
@@ -39,6 +53,40 @@ export default {
     progress(newProgress) {
       const barWidth = this.$el.clientWidth - progressBtnWidth
       this.offset = barWidth * newProgress
+    }
+  },
+  created() {
+    this.touch = {}
+  },
+  methods: {
+    // 拖动滚动条
+    onTouchStart(e) {
+      this.touch.x1 = e.touches[0].pageX
+      this.touch.beginWidth = this.$refs.progressRef.clientWidth
+    },
+    onTouchMove(e) {
+      // 偏移值
+      const delta = e.touches[0].pageX - this.touch.x1
+      // 位移过后进度条宽度
+      const tempWidth = this.touch.beginWidth + delta
+      const barWidth = this.$el.clientWidth - progressBtnWidth
+      // 限制在0-1之间
+      const progress = Math.min(1, Math.max(tempWidth / barWidth, 0))
+      this.offset = barWidth * progress
+      this.$emit('progress-changing', progress)
+    },
+    onTouchEnd() {
+      const barWidth = this.$el.clientWidth - progressBtnWidth
+      const progress = this.$refs.progressRef.clientWidth / barWidth
+      this.$emit('progress-changed', progress)
+    },
+    // 点击滚动条
+    onClick(e) {
+      const rect = this.$el.getBoundingClientRect()
+      const offsetWidth = e.pageX - rect.left
+      const barWidth = this.$el.clientWidth - progressBtnWidth
+      const progress = offsetWidth / barWidth
+      this.$emit('progress-changed', progress)
     }
   }
 }
