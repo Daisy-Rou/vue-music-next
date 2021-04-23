@@ -21,6 +21,7 @@ export function randomPlay({ commit }, list) {
   commit('setCurrentIndex', 0)
 }
 
+// 切换歌曲播放模式
 export function changeMode({ commit, state, getters }, mode) {
   // 拿到正在播放歌曲的id
   const currentId = getters.currentSong.id

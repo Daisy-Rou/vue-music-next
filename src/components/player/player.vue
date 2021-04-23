@@ -27,7 +27,7 @@
               <i @click="next" class="icon-next"></i>
             </div>
             <div class="icon i-right">
-              <i class="icon-favorite"></i>
+              <i :class="getFavoriteIcon(currentSong)" @click="toggleFavorite(currentSong)"></i>
             </div>
           </div>
         </div>
@@ -46,14 +46,17 @@
 <script>
 import { computed, watch, ref } from 'vue'
 import useMode from './use-mode'
+import useFavorite from './use-favorite'
 import { useStore } from 'vuex'
 
 export default {
   name: 'player',
   setup() {
+    // ref
     const audioRef = ref(null)
     const songReady = ref(false)
 
+    // vuex computed
     const store = useStore()
     const fullScreen = computed(() => store.state.fullScreen)
 
@@ -77,9 +80,15 @@ export default {
     const disableCls = computed(() => {
       return songReady.value ? '' : 'disable'
     })
+
+    // hooks
     // 切换播放图标
     const { modeIcon, changeMode } = useMode()
 
+    // 收藏列表
+    const { getFavoriteIcon, toggleFavorite } = useFavorite()
+
+    // watch
     // 当前播放歌曲
     watch(currentSong, (newSong) => {
       if (!newSong.id || !newSong.url) {
@@ -100,6 +109,7 @@ export default {
       newPlaying ? audioEl.play() : audioEl.pause()
     })
 
+    // function
     function goBack() {
       store.commit('setFullScreen', false)
     }
@@ -190,7 +200,9 @@ export default {
       disableCls,
       error,
       changeMode,
-      modeIcon
+      modeIcon,
+      getFavoriteIcon,
+      toggleFavorite
     }
   }
 }
