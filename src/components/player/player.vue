@@ -13,6 +13,13 @@
           <h2 class="subtitle">{{currentSong.singer}}</h2>
         </div>
         <div class="bottom">
+          <div class="progress-wrapper">
+            <span class="time time-l">{{formatTime(currentTime)}}</span>
+            <div class="progress-bar-wrapper">
+              <progress-bar :progress="progress"></progress-bar>
+            </div>
+            <spn class="time time-r"></spn>
+          </div>
           <div class="operators">
             <div class="icon i-left">
               <i @click="changeMode" :class="modeIcon"></i>
@@ -38,6 +45,7 @@
       @pause="pause"
       @canplay="canplay"
       @error="error"
+      @timeupdate="updateTime"
     >
     </audio>
   </div>
@@ -48,13 +56,19 @@ import { computed, watch, ref } from 'vue'
 import useMode from './use-mode'
 import useFavorite from './use-favorite'
 import { useStore } from 'vuex'
+import ProgressBar from './progres-bar'
+import { formatTime } from '@/assets/js/util'
 
 export default {
   name: 'player',
+  components: {
+    ProgressBar
+  },
   setup() {
     // ref
     const audioRef = ref(null)
     const songReady = ref(false)
+    const currentTime = ref(0)
 
     // vuex computed
     const store = useStore()
@@ -79,6 +93,10 @@ export default {
     // 禁用样式
     const disableCls = computed(() => {
       return songReady.value ? '' : 'disable'
+    })
+
+    const progress = computed(() => {
+      return currentTime.value / currentSong.value.duration
     })
 
     // hooks
@@ -136,6 +154,10 @@ export default {
 
     function error() {
       songReady.value = true
+    }
+
+    function updateTime(e) {
+      currentTime.value = e.target.currentTime
     }
 
     // 前一首
@@ -202,7 +224,11 @@ export default {
       changeMode,
       modeIcon,
       getFavoriteIcon,
-      toggleFavorite
+      toggleFavorite,
+      currentTime,
+      formatTime,
+      progress,
+      updateTime
     }
   }
 }
@@ -285,6 +311,29 @@ export default {
             border-radius: 5px;
             background: $color-text-ll;
           }
+        }
+      }
+      .progress-wrapper {
+        display: flex;
+        align-items: center;
+        width: 80%;
+        margin: 0px auto;
+        padding: 10px 0;
+        .time {
+          color: $color-text;
+          font-size: $font-size-small;
+          flex: 0 0 40px;
+          line-height: 30px;
+          width: 40px;
+          &.time-l {
+            text-align: left;
+          }
+          &.time-r {
+            text-align: right;
+          }
+        }
+        .progress-bar-wrapper {
+          flex: 1;
         }
       }
       .progress-wrapper {
