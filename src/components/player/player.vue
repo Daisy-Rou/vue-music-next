@@ -28,6 +28,9 @@
                 >
               </div>
             </div>
+            <div class="playing-lyric-wrapper">
+              <div class="playing-lyric">{{playingLyric}}</div>
+            </div>
           </div>
         </div>
         <div class="bottom">
@@ -80,6 +83,7 @@ import { computed, watch, ref } from 'vue'
 import useMode from './use-mode'
 import useFavorite from './use-favorite'
 import useCd from './use-cd'
+import useLyric from './use-lyric'
 import { useStore } from 'vuex'
 import ProgressBar from './progres-bar'
 import { formatTime } from '@/assets/js/util'
@@ -138,6 +142,9 @@ export default {
 
     // cd
     const { cdCls, cdRef, cdImageRef } = useCd()
+
+    // 歌词
+    const { playingLyric } = useLyric()
 
     // watch
     // 当前播放歌曲
@@ -281,13 +288,19 @@ export default {
       canplay,
       disableCls,
       error,
+      // 切换播放图标
       changeMode,
       modeIcon,
+      // 收藏列表
       getFavoriteIcon,
       toggleFavorite,
+      // cd
       cdCls,
       cdRef,
       cdImageRef,
+      // 歌词
+      playingLyric,
+      // 进度条
       currentTime,
       formatTime,
       progress,
@@ -396,6 +409,18 @@ export default {
               // 无限旋转
               animation: rotate 20s linear infinite;
             }
+          }
+        }
+        .playing-lyric-wrapper {
+          width: 80%;
+          margin: 30px auto 0 auto;
+          overflow: hidden;
+          text-align: center;
+          .playing-lyric {
+            height: 20px;
+            line-height: 20px;
+            font-size: $font-size-medium;
+            color: $color-text-l;
           }
         }
       }

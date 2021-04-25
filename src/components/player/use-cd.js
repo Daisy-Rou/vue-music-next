@@ -12,11 +12,11 @@ export default function useCd() {
 
   watch(playing, (newPlaying) => {
     if (!newPlaying) {
-      syncTransfrom(cdRef.value, cdImageRef.value)
+      syncTransform(cdRef.value, cdImageRef.value)
     }
   })
 
-  function syncTransfrom(wrapper, inner) {
+  function syncTransform(wrapper, inner) {
     const wrapperTransform = getComputedStyle(wrapper).transform
     const innerTransform = getComputedStyle(inner).transform
     wrapper.style.transform = wrapperTransform === 'none' ? innerTransform : innerTransform.concat('', wrapperTransform)
