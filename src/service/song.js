@@ -21,6 +21,7 @@ export function processSongs(songs) {
 
 const lyricMap = {}
 export function getLyric(song) {
+  // 优化 如果歌词已存在不在掉接口
   if (song.lyric) {
     return Promise.resolve(song.lyric)
   }

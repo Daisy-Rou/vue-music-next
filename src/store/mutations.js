@@ -37,6 +37,7 @@ const mutations = {
   // 添加歌词
   addSongLyric(state, { song, lyric }) {
     state.sequenceList.map((item) => {
+      // 同一首歌
       if (item.mid === song.mid) {
         item.lyric = lyric
       }

@@ -29,7 +29,7 @@
       v-no-result:[noResultText]="noResult"
       class="list"
       :style="scrollStyle"
-      probe-type="3"
+      :probe-type="3"
       @scroll="onScroll"
     >
       <div class="song-list-wrapper">
