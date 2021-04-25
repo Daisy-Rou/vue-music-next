@@ -70,14 +70,18 @@ export default {
       const delta = e.touches[0].pageX - this.touch.x1
       // 位移过后进度条宽度
       const tempWidth = this.touch.beginWidth + delta
+      // 进度条总长度
       const barWidth = this.$el.clientWidth - progressBtnWidth
-      // 限制在0-1之间
+      // 限制在0-1之间 进度条移动百分比
       const progress = Math.min(1, Math.max(tempWidth / barWidth, 0))
+      // 进度条样式移动宽度
       this.offset = barWidth * progress
       this.$emit('progress-changing', progress)
     },
     onTouchEnd() {
+      // 进度条总长度
       const barWidth = this.$el.clientWidth - progressBtnWidth
+      // 进度条移动百分比
       const progress = this.$refs.progressRef.clientWidth / barWidth
       this.$emit('progress-changed', progress)
     },
