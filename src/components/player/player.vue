@@ -28,6 +28,7 @@
                 >
               </div>
             </div>
+            <!-- 当前正在播放歌词 -->
             <div class="playing-lyric-wrapper">
               <div class="playing-lyric">{{playingLyric}}</div>
             </div>
@@ -50,6 +51,12 @@
                   {{line.txt}}
                 </p>
               </dir>
+              <div
+                v-show="pureMusicLyric"
+                class="pure-music"
+              >
+                <p>{{pureMusicLyric}}</p>
+              </div>
             </div>
           </m-scroll>
         </div>
@@ -166,7 +173,7 @@ export default {
     const { cdCls, cdRef, cdImageRef } = useCd()
 
     // 歌词
-    const { playingLyric, currentLyric, currentLineNum, playLyric, stopLyric, lyricScrollRef, lyricListRef } = useLyric({ songReady, currentTime })
+    const { playingLyric, currentLyric, currentLineNum, playLyric, stopLyric, lyricScrollRef, lyricListRef, pureMusicLyric } = useLyric({ songReady, currentTime })
 
     // watch
     // 当前播放歌曲
@@ -336,6 +343,7 @@ export default {
       currentLineNum,
       lyricScrollRef,
       lyricListRef,
+      pureMusicLyric,
       // 进度条
       currentTime,
       formatTime,

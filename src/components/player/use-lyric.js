@@ -6,9 +6,10 @@ import { getLyric } from '@/service/song'
 export default function useLyric({ songReady, currentTime }) {
   const currentLyric = ref(null)
   const currentLineNum = ref(0)
-  const playingLyric = ref(null)
+  const playingLyric = ref('')
   const lyricScrollRef = ref(null)
   const lyricListRef = ref(null)
+  const pureMusicLyric = ref('')
   const store = useStore()
   const currentSong = computed(() => store.getters.currentSong)
 
@@ -18,8 +19,12 @@ export default function useLyric({ songReady, currentTime }) {
       return
     }
     stopLyric()
+    // 数据重置
     currentLyric.value = null
     currentLineNum.value = 0
+    pureMusicLyric.value = ''
+    playingLyric.value = ''
+
     const lyric = await getLyric(newSong)
     // 给一首歌添加歌词
     store.commit('addSongLyric', { song: newSong, lyric })
@@ -28,9 +33,15 @@ export default function useLyric({ songReady, currentTime }) {
       return
     }
     currentLyric.value = new Lyric(lyric, handleLyric)
-    if (songReady.value) {
-      playLyric()
+    const hasLyric = currentLyric.value.lines.length
+    if (hasLyric) {
+      if (songReady.value) {
+        playLyric()
+      }
+    } else {
+      playingLyric.value = pureMusicLyric.value = lyric.replace(/\[(\d{2}:\d{2}:\d{2})\]/g, '')
     }
+
     // 缓存歌曲
   })
 
@@ -50,8 +61,9 @@ export default function useLyric({ songReady, currentTime }) {
     }
   }
 
-  function handleLyric({ lineNum }) {
+  function handleLyric({ lineNum, txt }) {
     currentLineNum.value = lineNum
+    playingLyric.value = txt
     const scrollComp = lyricScrollRef.value
     const listEl = lyricListRef.value
     if (!listEl) {
@@ -70,6 +82,7 @@ export default function useLyric({ songReady, currentTime }) {
     playingLyric,
     currentLyric,
     currentLineNum,
+    pureMusicLyric,
     playLyric,
     stopLyric,
     lyricScrollRef,
