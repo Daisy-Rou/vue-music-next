@@ -41,6 +41,7 @@ export default {
   },
 
   computed: {
+    // 进度条样式
     progressStyle() {
       return `width:${this.offset}px`
     },
