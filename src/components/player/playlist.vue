@@ -6,13 +6,13 @@
         v-show="visible && playList.length"
         @click="hide"
       >
-        <div class="list-wrapper">
+        <div class="list-wrapper" @click.stop>
           <div class="list-header">
             <h1 class="title">
               <i
                 class="icon"
                 :class="modeIcon"
-                @click.stop="changeMode"
+                @click="changeMode"
               >
               </i>
               <span class="text">{{modeText}}</span>
@@ -22,11 +22,12 @@
             class="list-content"
             ref="scrollRef"
           >
-            <ul>
+            <ul ref="listRef">
               <li
                 class="item"
                 v-for="song in sequenceList"
                 :key="song.id"
+                @click="selectItem(song)"
               >
                 <i
                   class="current"
@@ -36,7 +37,7 @@
                 <span class="text">{{song.name}}</span>
                 <span
                   class="favorite"
-                  @click.stop="toggleFavorite(song)"
+                  @click="toggleFavorite(song)"
                 >
                   <i
                     :class="getFavoriteIcon(song)"
@@ -45,7 +46,7 @@
               </li>
             </ul>
           </m-scroll>
-          <div class="list-footer" @click.stop="hide">
+          <div class="list-footer" @click="hide">
             <span>关闭</span>
           </div>
         </div>
@@ -57,7 +58,7 @@
 <script>
 import MScroll from '@/components/base/scroll/scroll'
 import { useStore } from 'vuex'
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import useMode from './use-mode'
 import useFavorite from './use-favorite'
 
@@ -69,7 +70,9 @@ export default {
   setup() {
     const visible = ref(false)
     const scrollRef = ref(null)
+    const listRef = ref(null)
     const store = useStore()
+
     const playList = computed(() => store.state.playList)
     const sequenceList = computed(() => store.state.sequenceList)
     const currentSong = computed(() => store.getters.currentSong)
@@ -78,16 +81,33 @@ export default {
 
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
 
+    watch(currentSong, async () => {
+      if (!visible.value) {
+        return
+      }
+      await nextTick()
+      scrollToCurrent()
+    })
+
     function getCurrentIcon(song) {
       if (song.id === currentSong.value.id) {
         return 'icon-play'
       }
     }
 
+    function selectItem(song) {
+      const index = playList.value.findIndex((item) => {
+        return item.id === song.id
+      })
+      store.commit('setCurrentIndex', index)
+      store.commit('setPlayingState', true)
+    }
+
     async function show() {
       visible.value = true
       await nextTick()
       refreshScroll()
+      scrollToCurrent()
     }
 
     function hide() {
@@ -98,14 +118,24 @@ export default {
       scrollRef.value.scroll.refresh()
     }
 
+    function scrollToCurrent() {
+      const index = sequenceList.value.findIndex((song) => {
+        return currentSong.value.id === song.id
+      })
+      const target = listRef.value.children[index]
+      scrollRef.value.scroll.scrollToElement(target, 300)
+    }
+
     return {
       playList,
       scrollRef,
+      listRef,
       visible,
       sequenceList,
       show,
       hide,
       getCurrentIcon,
+      selectItem,
       // use-mode
       modeIcon,
       changeMode,
