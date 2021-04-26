@@ -37,7 +37,7 @@ export default function useMiniSlider() {
           })
           sliderVal.on('slidePageChanged', ({ pageX }) => {
             store.commit('setCurrentIndex', pageX)
-            store.commit('setPlayingState', true)
+            // store.commit('setPlayingState', true)
           })
         } else {
           sliderVal.refresh()
@@ -49,6 +49,13 @@ export default function useMiniSlider() {
     watch(currentIndex, (newCurrentIndex) => {
       if (sliderVal && sliderShow.value) {
         sliderVal.goToPage(newCurrentIndex, 0, 0)
+      }
+    })
+
+    watch(playList, async () => {
+      if (sliderVal && sliderShow.value) {
+        await nextTick()
+        sliderVal.refresh()
       }
     })
   })

@@ -22,7 +22,11 @@
             class="list-content"
             ref="scrollRef"
           >
-            <ul ref="listRef">
+            <transition-group
+              ref="listRef"
+              name="list"
+              tag="ul"
+            >
               <li
                 class="item"
                 v-for="song in sequenceList"
@@ -43,8 +47,15 @@
                     :class="getFavoriteIcon(song)"
                   ></i>
                 </span>
+                <span
+                  class="delete"
+                  :class="{'disable': removing}"
+                  @click.stop="removeSong(song)"
+                >
+                  <i class="icon-delete"></i>
+                </span>
               </li>
-            </ul>
+            </transition-group>
           </m-scroll>
           <div class="list-footer" @click="hide">
             <span>关闭</span>
@@ -69,6 +80,7 @@ export default {
   },
   setup() {
     const visible = ref(false)
+    const removing = ref(false)
     const scrollRef = ref(null)
     const listRef = ref(null)
     const store = useStore()
@@ -81,8 +93,8 @@ export default {
 
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
 
-    watch(currentSong, async () => {
-      if (!visible.value) {
+    watch(currentSong, async (newSong) => {
+      if (!visible.value || !newSong.id) {
         return
       }
       await nextTick()
@@ -101,6 +113,17 @@ export default {
       })
       store.commit('setCurrentIndex', index)
       store.commit('setPlayingState', true)
+    }
+
+    function removeSong(song) {
+      if (removing.value) {
+        return
+      }
+      removing.value = true
+      store.dispatch('removeSong', song)
+      setTimeout(() => {
+        removing.value = false
+      }, 300)
     }
 
     async function show() {
@@ -122,7 +145,10 @@ export default {
       const index = sequenceList.value.findIndex((song) => {
         return currentSong.value.id === song.id
       })
-      const target = listRef.value.children[index]
+      if (index === -1) {
+        return
+      }
+      const target = listRef.value.$el.children[index]
       scrollRef.value.scroll.scrollToElement(target, 300)
     }
 
@@ -131,11 +157,13 @@ export default {
       scrollRef,
       listRef,
       visible,
+      removing,
       sequenceList,
       show,
       hide,
       getCurrentIcon,
       selectItem,
+      removeSong,
       // use-mode
       modeIcon,
       changeMode,
