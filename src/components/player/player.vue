@@ -1,5 +1,5 @@
 <template>
-  <div class="player">
+  <div class="player" v-show="playList.length > 0">
     <div class="normal-player" v-show="fullScreen">
       <template v-if="currentSong">
         <div class="background">
@@ -78,6 +78,7 @@
             <span class="time time-l">{{formatTime(currentTime)}}</span>
             <div class="progress-bar-wrapper">
               <progress-bar
+                ref="barRef"
                 :progress="progress"
                 @progress-changing="onProgressChanging"
                 @progress-changed="onProgressChanged"
@@ -106,6 +107,7 @@
         </div>
       </template>
     </div>
+    <mini-player :progress="progress" :toggle-play="togglePlay"></mini-player>
     <audio
       ref="audioRef"
       @pause="pause"
@@ -119,7 +121,7 @@
 </template>
 
 <script>
-import { computed, watch, ref } from 'vue'
+import { computed, watch, ref, nextTick } from 'vue'
 import useMode from './use-mode'
 import useFavorite from './use-favorite'
 import useCd from './use-cd'
@@ -127,6 +129,7 @@ import useLyric from './use-lyric'
 import useMiddleInteractive from './use-middle-interactive'
 import { useStore } from 'vuex'
 import ProgressBar from './progres-bar'
+import MiniPlayer from './mini-player'
 import { formatTime } from '@/assets/js/util'
 import { PLAY_MODE } from '@/assets/js/constant'
 import MScroll from '@/components/base/scroll/scroll'
@@ -135,13 +138,15 @@ export default {
   name: 'player',
   components: {
     ProgressBar,
-    MScroll
+    MScroll,
+    MiniPlayer
   },
   setup() {
     // ref
     const audioRef = ref(null)
     const songReady = ref(false)
     const currentTime = ref(0)
+    const barRef = ref(null)
     let progressChanging = false
 
     // vuex computed
@@ -218,6 +223,13 @@ export default {
         stopLyric()
       }
       // newPlaying ? audioEl.play() : audioEl.pause()
+    })
+
+    watch(fullScreen, async (newFullScreen) => {
+      if (newFullScreen) {
+        await nextTick()
+        barRef.value.setOffset(progress.value)
+      }
     })
 
     // function
@@ -333,6 +345,7 @@ export default {
 
     return {
       audioRef,
+      barRef,
       fullScreen,
       currentSong,
       goBack,
@@ -375,7 +388,8 @@ export default {
       updateTime,
       onProgressChanging,
       onProgressChanged,
-      end
+      end,
+      playList
     }
   }
 }
