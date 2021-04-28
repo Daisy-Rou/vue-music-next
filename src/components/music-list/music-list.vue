@@ -42,7 +42,7 @@
 <script>
 import SongList from '@/components/base/song-list/song-list'
 import MScroll from '@/components/base/scroll/scroll'
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 // 顶部高度
 const RESERVED_HEIGHT = 40
@@ -125,12 +125,15 @@ export default {
       }
     },
     scrollStyle() {
-      // const bottom = this.songs.length ? '60px' : '0'
+      const bottom = this.playList.length ? '60px' : '0'
       return {
-        top: `${this.imageHeight}px`
-        // bottom
+        top: `${this.imageHeight}px`,
+        bottom
       }
-    }
+    },
+    ...mapState([
+      'playList'
+    ])
   },
   mounted() {
     // 拿到图片高度
