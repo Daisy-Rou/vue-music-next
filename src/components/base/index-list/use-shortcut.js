@@ -43,7 +43,9 @@ export default function useShortcut(props, groupRef) {
     if (isNaN(index)) {
       return
     }
+    // 限制在0 ~ length-1
     index = Math.max(0, Math.min(shortcutList.value.length - 1, index))
+    // 目标元素
     const targetEl = groupRef.value.children[index]
     const scroll = scrollRef.value.scroll
     scroll.scrollToElement(targetEl, 0)

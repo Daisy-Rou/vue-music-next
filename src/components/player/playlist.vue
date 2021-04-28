@@ -16,6 +16,9 @@
               >
               </i>
               <span class="text">{{modeText}}</span>
+              <span class="clear" @click="showConfirm">
+                <i class="icon-clear"></i>
+              </span>
             </h1>
           </div>
           <m-scroll
@@ -61,6 +64,12 @@
             <span>关闭</span>
           </div>
         </div>
+        <confirm
+          ref="confirmRef"
+          text="是否清空播放列表"
+          confirm-btn-text="清空"
+          @confirm="confirmClear"
+        ></confirm>
       </div>
     </transition>
   </teleport>
@@ -68,6 +77,7 @@
 
 <script>
 import MScroll from '@/components/base/scroll/scroll'
+import Confirm from '@/components/base/confirm/confirm'
 import { useStore } from 'vuex'
 import { computed, nextTick, ref, watch } from 'vue'
 import useMode from './use-mode'
@@ -76,13 +86,15 @@ import useFavorite from './use-favorite'
 export default {
   name: 'playlist',
   components: {
-    MScroll
+    MScroll,
+    Confirm
   },
   setup() {
     const visible = ref(false)
     const removing = ref(false)
     const scrollRef = ref(null)
     const listRef = ref(null)
+    const confirmRef = ref(null)
     const store = useStore()
 
     const playList = computed(() => store.state.playList)
@@ -121,9 +133,21 @@ export default {
       }
       removing.value = true
       store.dispatch('removeSong', song)
+      if (!playList.value.length) {
+        hide()
+      }
       setTimeout(() => {
         removing.value = false
       }, 300)
+    }
+
+    function showConfirm() {
+      confirmRef.value.show()
+    }
+
+    function confirmClear() {
+      store.dispatch('clearSongList')
+      hide()
     }
 
     async function show() {
@@ -156,6 +180,7 @@ export default {
       playList,
       scrollRef,
       listRef,
+      confirmRef,
       visible,
       removing,
       sequenceList,
@@ -170,7 +195,10 @@ export default {
       modeText,
       // us-favorite
       getFavoriteIcon,
-      toggleFavorite
+      toggleFavorite,
+      // confirm
+      showConfirm,
+      confirmClear
     }
   }
 }

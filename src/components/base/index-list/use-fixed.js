@@ -25,9 +25,10 @@ export default function useFixed(props) {
       transform: `translate3d(0, ${diff}px, 0)`
     }
   })
+
   watch(() => props.data, async() => {
     await nextTick()
-    caculate()
+    calculate()
   })
 
   watch(scrollY, (newY) => {
@@ -42,7 +43,7 @@ export default function useFixed(props) {
     }
   })
 
-  function caculate() {
+  function calculate() {
     const list = groupRef.value.children
     const listHeightsVal = listHeights.value
     let height = 0

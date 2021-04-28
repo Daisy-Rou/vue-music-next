@@ -1,9 +1,6 @@
 /*
  * 签名 JS，直接从第三方服务器获取，无需修改，直接使用。
  */
-/*
- * 签名 JS，直接从第三方服务器获取，无需修改，直接使用。
- */
 
 !function(n, t) {
   "object" == typeof exports && "undefined" != typeof module ? module.exports = t() : "function" == typeof define && define.amd ? define(t) : (n = n || self).getSecuritySign = t()
