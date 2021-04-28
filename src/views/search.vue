@@ -21,7 +21,7 @@
         </ul>
       </div>
     </div>
-    <div class="search-result" v-show="query">
+    <div class="search-result" v-if="query">
       <suggest :query="query"></suggest>
     </div>
   </div>
