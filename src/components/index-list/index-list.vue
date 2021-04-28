@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import MScroll from '../scroll/scroll'
+import MScroll from '@/components/base/scroll/scroll'
 import useFixed from './use-fixed'
 import useShortcut from './use-shortcut'
 export default {

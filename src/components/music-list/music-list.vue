@@ -41,7 +41,8 @@
 
 <script>
 import SongList from '@/components/base/song-list/song-list'
-import MScroll from '@/components/base/scroll/scroll'
+// import MScroll from '@/components/base/scroll/scroll'
+import MScroll from '@/components/wrap-scroll'
 import { mapActions, mapState } from 'vuex'
 
 // 顶部高度

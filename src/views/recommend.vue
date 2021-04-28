@@ -37,7 +37,7 @@
 <script>
 import { getRecommend } from '@/service/recommend'
 import MSlider from '@/components/base/slider/slider'
-import MScroll from '@/components/base/scroll/scroll'
+import MScroll from '@/components/wrap-scroll'
 export default {
   name: 'recommend',
   components: {
