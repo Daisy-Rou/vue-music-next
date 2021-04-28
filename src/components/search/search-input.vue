@@ -5,6 +5,7 @@
       type="text"
       class="input-inner"
       v-model="query"
+      :placeholder="placeholder"
     />
     <i
       v-show="query"
@@ -20,7 +21,11 @@ import { debounce } from 'throttle-debounce'
 export default {
   name: 'search-input',
   props: {
-    modelValue: String
+    modelValue: String,
+    placeholder: {
+      type: String,
+      default: '搜索歌曲、歌手'
+    }
   },
   data() {
     return {

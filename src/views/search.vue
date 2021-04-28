@@ -6,13 +6,29 @@
     <m-scroll>
 
     </m-scroll>
+    <div class="search-content">
+      <div class="hot-keys">
+        <h1 class="title">热门搜索</h1>
+        <ul>
+          <li
+            class="item"
+            v-for="item in hotKeys"
+            :key="item.id"
+            @click="addQuery(item.key)"
+          >
+            <span>{{item.key}}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import SearchInput from '@/components/search/search-input'
 import MScroll from '@/components/wrap-scroll'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
+import { getHotKeys } from '@/service/search'
 
 export default {
   name: 'search',
@@ -22,13 +38,20 @@ export default {
   },
   setup() {
     const query = ref('')
+    const hotKeys = ref([])
 
-    watch(query, (val) => {
-      console.log(val)
+    getHotKeys().then((result) => {
+      hotKeys.value = result.hotKeys
     })
 
+    function addQuery(key) {
+      query.value = key
+    }
+
     return {
-      query
+      query,
+      hotKeys,
+      addQuery
     }
   }
 }
