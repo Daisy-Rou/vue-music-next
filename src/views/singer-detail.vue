@@ -7,9 +7,9 @@
 <script>
 import CreateDetailComponent from '@/assets/js/create-detail-component'
 import { getSingerDetail } from '@/service/singer'
-import { SINGER_KRY } from '@/assets/js/constant'
+import { SINGER_KEY } from '@/assets/js/constant'
 
-export default CreateDetailComponent('singer-detail', SINGER_KRY, getSingerDetail)
+export default CreateDetailComponent('singer-detail', SINGER_KEY, getSingerDetail)
 </script>
 
 <style lang="scss" scoped>

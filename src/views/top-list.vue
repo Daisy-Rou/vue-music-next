@@ -6,6 +6,7 @@
           class="item"
           v-for="item in topList"
           :key="item.id"
+          @click="selectItem(item)"
         >
           <div class="icon">
             <img
@@ -27,12 +28,19 @@
         </li>
       </ul>
     </m-scroll>
+    <router-view v-slot="{ Component }">
+      <transition appear name="slide">
+        <component :is="Component" :data="selectedTop" />
+      </transition>
+    </router-view>
   </div>
 </template>
 
 <script>
 import MScroll from '@/components/base/scroll/scroll'
 import { getTopList } from '@/service/top-list'
+import { TOP_KEY } from '@/assets/js/constant'
+import storage from 'good-storage'
 
 export default {
   name: 'top-list',
@@ -42,13 +50,26 @@ export default {
   data() {
     return {
       topList: [],
-      loading: true
+      loading: true,
+      selectedTop: null
     }
   },
   async created() {
     const result = await getTopList()
     this.topList = result.topList
     this.loading = false
+  },
+  methods: {
+    selectItem(top) {
+      this.selectedTop = top
+      this.cachedTop(top)
+      this.$router.push({
+        path: `/top-list/${top.id}`
+      })
+    },
+    cachedTop(top) {
+      storage.session.set(TOP_KEY, top)
+    }
   }
 }
 </script>

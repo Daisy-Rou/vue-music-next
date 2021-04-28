@@ -1,6 +1,7 @@
 // 存储项目共享常量
-export const SINGER_KRY = '__singer__'
+export const SINGER_KEY = '__singer__'
 export const ALBUM_KEY = '__album__'
+export const TOP_KEY = '__top__'
 export const FAVORITE_KEY = '__favorite__'
 
 export const PLAY_MODE = {

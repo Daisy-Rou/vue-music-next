@@ -14,7 +14,7 @@
 import { getSingerList } from '@/service/singer'
 import IndexList from '@/components/index-list/index-list'
 import storage from 'good-storage'
-import { SINGER_KRY } from '@/assets/js/constant'
+import { SINGER_KEY } from '@/assets/js/constant'
 
 export default {
   name: 'singer',
@@ -41,7 +41,7 @@ export default {
     },
     // 缓存
     cacheSinger(singer) {
-      storage.session.set(SINGER_KRY, singer)
+      storage.session.set(SINGER_KEY, singer)
     }
   }
 }
