@@ -1,6 +1,7 @@
 <template>
   <div
     class="suggest"
+    ref="rootRef"
     v-loading:[loadingText]="loading"
     v-no-result:[noResultText]="noResult"
   >
@@ -30,14 +31,16 @@
           </p>
         </div>
       </li>
+      <div class="suggest-item" v-loading:[loadingText]="pullupLoading"></div>
     </ul>
   </div>
 </template>
 
 <script>
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { search } from '@/service/search'
 import { processSongs } from '@/service/song'
+import usePullUpLoad from '@/components/search/use-pull-up-load'
 
 export default {
   name: 'suggest',
@@ -56,12 +59,18 @@ export default {
     const loadingText = ref('')
     const noResultText = ref('抱歉，暂无搜索结果')
 
+    const { rootRef, isPullUpLoad, scroll } = usePullUpLoad(searchMore)
+
     const loading = computed(() => {
       return !singer.value && !songs.value.length
     })
 
     const noResult = computed(() => {
       return !singer.value && !songs.value.length && !hasMore.value
+    })
+
+    const pullupLoading = computed(() => {
+      return isPullUpLoad.value && hasMore.value
     })
 
     watch(() => props.query, async (newQuery) => {
@@ -80,6 +89,27 @@ export default {
       songs.value = await processSongs(result.songs)
       singer.value = result.singer
       hasMore.value = result.hasMore
+      await nextTick()
+      await makeItScrollable()
+    }
+
+    async function searchMore() {
+      if (!hasMore.value) {
+        return
+      }
+      page.value++
+      const result = await search(props.query, page.value, props.showSinger)
+      songs.value = songs.value.concat(await processSongs(result.songs))
+      hasMore.value = result.hasMore
+      await nextTick()
+      await makeItScrollable()
+    }
+
+    async function makeItScrollable() {
+      if (scroll.value.maxScrollY >= -1) {
+        // 此时容器高度大于内容高度
+        await searchMore()
+      }
     }
 
     return {
@@ -88,7 +118,11 @@ export default {
       loadingText,
       loading,
       noResult,
-      noResultText
+      noResultText,
+      pullupLoading,
+      // use-pull-up-load
+      rootRef,
+      isPullUpLoad
     }
   }
 }

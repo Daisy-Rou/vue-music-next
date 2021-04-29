@@ -3,9 +3,10 @@
     <div class="search-input-wrapper">
       <search-input v-model="query"></search-input>
     </div>
-    <m-scroll>
+    <m-scroll ref="scrollRef">
 
     </m-scroll>
+    <!-- 热门搜索 -->
     <div class="search-content" v-show="!query">
       <div class="hot-keys">
         <h1 class="title">热门搜索</h1>
@@ -21,6 +22,7 @@
         </ul>
       </div>
     </div>
+    <!-- 搜搜结果 -->
     <div class="search-result" v-if="query">
       <suggest :query="query"></suggest>
     </div>
