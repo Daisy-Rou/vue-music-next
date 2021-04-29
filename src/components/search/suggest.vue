@@ -21,6 +21,7 @@
         class="suggest-item"
         v-for="song in songs"
         :key="song.id"
+        @click="selectSong(song)"
       >
         <div class="icon">
           <i class="icon-music"></i>
@@ -51,7 +52,8 @@ export default {
       default: true
     }
   },
-  setup(props) {
+  emits: ['selectSong'],
+  setup(props, { emit }) {
     const singer = ref(null)
     const songs = ref([])
     const hasMore = ref(true)
@@ -122,6 +124,10 @@ export default {
       }
     }
 
+    function selectSong(song) {
+      emit('selectSong', song)
+    }
+
     return {
       singer,
       songs,
@@ -132,7 +138,8 @@ export default {
       pullupLoading,
       // use-pull-up-load
       rootRef,
-      isPullUpLoad
+      isPullUpLoad,
+      selectSong
     }
   }
 }

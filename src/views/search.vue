@@ -3,9 +3,9 @@
     <div class="search-input-wrapper">
       <search-input v-model="query"></search-input>
     </div>
-    <m-scroll ref="scrollRef">
+    <!-- <m-scroll ref="scrollRef">
 
-    </m-scroll>
+    </m-scroll> -->
     <!-- 热门搜索 -->
     <div class="search-content" v-show="!query">
       <div class="hot-keys">
@@ -24,28 +24,31 @@
     </div>
     <!-- 搜搜结果 -->
     <div class="search-result" v-if="query">
-      <suggest :query="query"></suggest>
+      <suggest :query="query" @select-song="selectSong"></suggest>
     </div>
   </div>
 </template>
 
 <script>
 import SearchInput from '@/components/search/search-input'
-import MScroll from '@/components/wrap-scroll'
+// import MScroll from '@/components/wrap-scroll'
 import Suggest from '@/components/search/suggest'
 import { ref } from 'vue'
 import { getHotKeys } from '@/service/search'
+import { useStore } from 'vuex'
 
 export default {
   name: 'search',
   components: {
     SearchInput,
-    MScroll,
+    // MScroll,
     Suggest
   },
   setup() {
     const query = ref('')
     const hotKeys = ref([])
+
+    const store = useStore()
 
     getHotKeys().then((result) => {
       hotKeys.value = result.hotKeys
@@ -55,10 +58,15 @@ export default {
       query.value = key
     }
 
+    function selectSong(song) {
+      store.dispatch('addSong', song)
+    }
+
     return {
       query,
       hotKeys,
-      addQuery
+      addQuery,
+      selectSong
     }
   }
 }
