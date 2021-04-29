@@ -36,3 +36,9 @@ export function remove(key, compare) {
 export function load(key) {
   return storage.get(key, [])
 }
+
+// 清空某个key下面的所有数据
+export function clear(key) {
+  storage.remove(key)
+  return []
+}

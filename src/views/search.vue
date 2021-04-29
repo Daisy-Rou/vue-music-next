@@ -26,10 +26,11 @@
         <div class="search-history" v-show="searchHistory.length">
           <h1 class="title">
             <span class="text">搜索历史</span>
-            <span class="clear">
+            <span class="clear" @click="showConfirm">
                 <i class="icon-clear"></i>
               </span>
           </h1>
+          <confirm ref="confirmRef" text="是否清空所有搜索历史" confirm-btn-text="清空" @confirm="clearSearch"></confirm>
           <search-list :searches="searchHistory" @select="addQuery" @delete="deleteSearch"></search-list>
         </div>
       </div>
@@ -58,6 +59,7 @@ import { useRouter } from 'vue-router'
 import storage from 'good-storage'
 import { SINGER_KEY } from '@/assets/js/constant'
 import useSearchHistory from '@/components/search/use-search-history'
+import Confirm from '@/components/base/confirm/confirm'
 
 export default {
   name: 'search',
@@ -65,13 +67,15 @@ export default {
     SearchInput,
     MScroll,
     Suggest,
-    SearchList
+    SearchList,
+    Confirm
   },
   setup() {
     const query = ref('')
     const hotKeys = ref([])
     const selectedSinger = ref(null)
     const scrollRef = ref(null)
+    const confirmRef = ref(null)
 
     const store = useStore()
     const searchHistory = computed(() => store.state.searchHistory)
@@ -82,7 +86,7 @@ export default {
       hotKeys.value = result.hotKeys
     })
 
-    const { saveSearch, deleteSearch } = useSearchHistory()
+    const { saveSearch, deleteSearch, clearSearch } = useSearchHistory()
 
     watch(query, async (newQuery) => {
       if (!newQuery) {
@@ -97,6 +101,10 @@ export default {
 
     function addQuery(key) {
       query.value = key
+    }
+
+    function showConfirm() {
+      confirmRef.value.show()
     }
 
     function selectSinger(singer) {
@@ -123,10 +131,13 @@ export default {
       selectSong,
       selectSinger,
       selectedSinger,
+      confirmRef,
+      showConfirm,
       // store
       searchHistory,
       // use-search-history
       saveSearch,
+      clearSearch,
       deleteSearch
     }
   }
