@@ -21,9 +21,15 @@
           </li>
         </ul>
       </div>
+      <div class="search-history" v-show="searchHistory.length">
+        <h1 class="title">
+          <span class="text">搜索历史</span>
+        </h1>
+        <search-list :searches="searchHistory" @select="addQuery" @delete="deleteSearch"></search-list>
+      </div>
     </div>
-    <!-- 搜搜结果 -->
-    <div class="search-result" v-if="query">
+    <!-- 搜索结果 -->
+    <div class="search-result" v-show="query">
       <suggest :query="query" @select-song="selectSong" @select-singer="selectSinger"></suggest>
     </div>
     <router-view v-slot="{ Component }">
@@ -38,19 +44,22 @@
 import SearchInput from '@/components/search/search-input'
 // import MScroll from '@/components/wrap-scroll'
 import Suggest from '@/components/search/suggest'
-import { ref } from 'vue'
+import SearchList from '@/components/base/search-list/search-list'
+import { computed, ref } from 'vue'
 import { getHotKeys } from '@/service/search'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import storage from 'good-storage'
 import { SINGER_KEY } from '@/assets/js/constant'
+import useSearchHistory from '@/components/search/use-search-history'
 
 export default {
   name: 'search',
   components: {
     SearchInput,
     // MScroll,
-    Suggest
+    Suggest,
+    SearchList
   },
   setup() {
     const query = ref('')
@@ -58,17 +67,22 @@ export default {
     const selectedSinger = ref(null)
 
     const store = useStore()
+    const searchHistory = computed(() => store.state.searchHistory)
+
     const router = useRouter()
 
     getHotKeys().then((result) => {
       hotKeys.value = result.hotKeys
     })
 
+    const { saveSearch, deleteSearch } = useSearchHistory()
+
     function addQuery(key) {
       query.value = key
     }
 
     function selectSinger(singer) {
+      saveSearch(query.value)
       selectedSinger.value = singer
       cacheSinger(singer)
       router.push({ path: `/search/${singer.mid}` })
@@ -79,6 +93,7 @@ export default {
     }
 
     function selectSong(song) {
+      saveSearch(query.value)
       store.dispatch('addSong', song)
     }
 
@@ -88,7 +103,12 @@ export default {
       addQuery,
       selectSong,
       selectSinger,
-      selectedSinger
+      selectedSinger,
+      // store
+      searchHistory,
+      // use-search-history
+      saveSearch,
+      deleteSearch
     }
   }
 }
