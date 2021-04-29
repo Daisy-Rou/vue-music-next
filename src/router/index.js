@@ -51,7 +51,14 @@ const routes = [
   {
     path: '/search',
     name: 'Search',
-    component: Search
+    component: Search,
+    children: [
+      {
+        path: ':id',
+        name: 'SingerDetail',
+        component: SingerDetail
+      }
+    ]
   }
 ]
 

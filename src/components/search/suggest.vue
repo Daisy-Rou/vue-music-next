@@ -9,6 +9,7 @@
       <li
         class="suggest-item"
         v-if="singer"
+        @click="selectSinger(singer)"
       >
         <div class="icon">
           <i class="icon-mine"></i>
@@ -52,7 +53,7 @@ export default {
       default: true
     }
   },
-  emits: ['selectSong'],
+  emits: ['selectSong', 'selectSinger'],
   setup(props, { emit }) {
     const singer = ref(null)
     const songs = ref([])
@@ -124,6 +125,10 @@ export default {
       }
     }
 
+    function selectSinger(singer) {
+      emit('selectSinger', singer)
+    }
+
     function selectSong(song) {
       emit('selectSong', song)
     }
@@ -139,7 +144,9 @@ export default {
       // use-pull-up-load
       rootRef,
       isPullUpLoad,
-      selectSong
+      // emit
+      selectSong,
+      selectSinger
     }
   }
 }

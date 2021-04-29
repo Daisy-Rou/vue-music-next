@@ -24,8 +24,13 @@
     </div>
     <!-- 搜搜结果 -->
     <div class="search-result" v-if="query">
-      <suggest :query="query" @select-song="selectSong"></suggest>
+      <suggest :query="query" @select-song="selectSong" @select-singer="selectSinger"></suggest>
     </div>
+    <router-view v-slot="{ Component }">
+      <transition appear name="slide">
+        <component :is="Component" :data="selectedSinger" />
+      </transition>
+    </router-view>
   </div>
 </template>
 
@@ -36,6 +41,9 @@ import Suggest from '@/components/search/suggest'
 import { ref } from 'vue'
 import { getHotKeys } from '@/service/search'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import storage from 'good-storage'
+import { SINGER_KEY } from '@/assets/js/constant'
 
 export default {
   name: 'search',
@@ -47,8 +55,10 @@ export default {
   setup() {
     const query = ref('')
     const hotKeys = ref([])
+    const selectedSinger = ref(null)
 
     const store = useStore()
+    const router = useRouter()
 
     getHotKeys().then((result) => {
       hotKeys.value = result.hotKeys
@@ -56,6 +66,16 @@ export default {
 
     function addQuery(key) {
       query.value = key
+    }
+
+    function selectSinger(singer) {
+      selectedSinger.value = singer
+      cacheSinger(singer)
+      router.push({ path: `/search/${singer.mid}` })
+    }
+
+    function cacheSinger(singer) {
+      storage.session.set(SINGER_KEY, singer)
     }
 
     function selectSong(song) {
@@ -66,7 +86,9 @@ export default {
       query,
       hotKeys,
       addQuery,
-      selectSong
+      selectSong,
+      selectSinger,
+      selectedSinger
     }
   }
 }
