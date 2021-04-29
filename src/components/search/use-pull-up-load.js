@@ -6,7 +6,7 @@ import ObserveDOM from '@better-scroll/slide'
 BSroll.use(PullUp)
 BSroll.use(ObserveDOM)
 
-export default function usePullUpLoad(requestData) {
+export default function usePullUpLoad(requestData, preventPullUpload) {
   const scroll = ref(null)
   const rootRef = ref(null)
   const isPullUpLoad = ref(false)
@@ -20,6 +20,10 @@ export default function usePullUpLoad(requestData) {
     scrollVal.on('pullingUp', pullingUpHandler)
 
     async function pullingUpHandler() {
+      if (preventPullUpload.value) {
+        scrollVal.finishPullUp()
+        return
+      }
       isPullUpLoad.value = true
       await requestData()
       scrollVal.finishPullUp()
