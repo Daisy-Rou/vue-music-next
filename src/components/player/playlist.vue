@@ -60,6 +60,12 @@
               </li>
             </transition-group>
           </m-scroll>
+          <div class="list-add">
+            <div class="add" @click="showAddSong">
+              <i class="icon-add"></i>
+              <span class="text">添加歌曲到队列</span>
+            </div>
+          </div>
           <div class="list-footer" @click="hide">
             <span>关闭</span>
           </div>
@@ -70,6 +76,7 @@
           confirm-btn-text="清空"
           @confirm="confirmClear"
         ></confirm>
+        <add-song ref="addSongRef"></add-song>
       </div>
     </transition>
   </teleport>
@@ -78,6 +85,7 @@
 <script>
 import MScroll from '@/components/base/scroll/scroll'
 import Confirm from '@/components/base/confirm/confirm'
+import AddSong from '@/components/add-song/add-song'
 import { useStore } from 'vuex'
 import { computed, nextTick, ref, watch } from 'vue'
 import useMode from './use-mode'
@@ -87,7 +95,8 @@ export default {
   name: 'playlist',
   components: {
     MScroll,
-    Confirm
+    Confirm,
+    AddSong
   },
   setup() {
     const visible = ref(false)
@@ -95,6 +104,7 @@ export default {
     const scrollRef = ref(null)
     const listRef = ref(null)
     const confirmRef = ref(null)
+    const addSongRef = ref(null)
     const store = useStore()
 
     const playList = computed(() => store.state.playList)
@@ -150,6 +160,10 @@ export default {
       hide()
     }
 
+    function showAddSong() {
+      addSongRef.value.show()
+    }
+
     async function show() {
       visible.value = true
       await nextTick()
@@ -181,6 +195,7 @@ export default {
       scrollRef,
       listRef,
       confirmRef,
+      addSongRef,
       visible,
       removing,
       sequenceList,
@@ -198,7 +213,9 @@ export default {
       toggleFavorite,
       // confirm
       showConfirm,
-      confirmClear
+      confirmClear,
+      // add-song
+      showAddSong
     }
   }
 }
