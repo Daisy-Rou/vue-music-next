@@ -136,6 +136,7 @@ import useCd from './use-cd'
 import useLyric from './use-lyric'
 import useMiddleInteractive from './use-middle-interactive'
 import useAnimation from './use-animation'
+import usePlayHistory from './use-play-history'
 import { useStore } from 'vuex'
 import ProgressBar from './progres-bar'
 import MiniPlayer from './mini-player'
@@ -209,6 +210,9 @@ export default {
     // 动画
     const { cdWrapperRef, enter, afterEnter, leave, afterLeave } = useAnimation()
 
+    // 播放历史
+    const { savePlay } = usePlayHistory()
+
     // watch
     // 当前播放歌曲
     watch(currentSong, (newSong) => {
@@ -269,6 +273,7 @@ export default {
       }
       songReady.value = true
       playLyric()
+      savePlay(currentSong.value)
     }
 
     function error() {

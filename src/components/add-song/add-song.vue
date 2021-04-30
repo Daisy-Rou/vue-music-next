@@ -14,10 +14,42 @@
             placeholder="搜索歌曲"
           ></search-input>
         </div>
+        <div v-show="!query">
+          <switches
+            :items="['最近播放', '搜索历史']"
+            v-model="currentIndex"
+          ></switches>
+          <div class="list-wrapper">
+            <m-scroll
+              v-if="currentIndex === 0"
+              class="list-scroll"
+            >
+              <div class="list-inner">
+                <song-list
+                  :songs="playHistory"
+                  @select="selectSongBySongList"
+                ></song-list>
+              </div>
+            </m-scroll>
+            <m-scroll
+              v-if="currentIndex === 1"
+              class="list-scroll"
+            >
+              <div class="list-inner">
+                <search-list
+                  :searches="searchHistory"
+                  :show-delete="false"
+                  @select="addQuery"
+                ></search-list>
+              </div>
+            </m-scroll>
+          </div>
+        </div>
         <div class="search-result" v-show="query">
           <suggest
             :query="query"
             :show-singer="false"
+            @select-song="selectSongBySuggest"
           ></suggest>
         </div>
       </div>
@@ -28,17 +60,35 @@
 <script>
 import SearchInput from '@/components/search/search-input'
 import Suggest from '@/components/search/suggest'
-import { ref } from 'vue'
+import Switches from '@/components/base/switches/switches'
+import SearchList from '@/components/base/search-list/search-list'
+import SongList from '@/components/base/song-list/song-list'
+import MScroll from '@/components/wrap-scroll'
+import { computed, ref } from 'vue'
+import { useStore } from 'vuex'
+import useSearchHistory from '@/components/search/use-search-history'
 
 export default {
   name: 'add-song',
   components: {
     SearchInput,
-    Suggest
+    SearchList,
+    SongList,
+    Suggest,
+    Switches,
+    MScroll
   },
   setup() {
     const visible = ref(false)
     const query = ref('')
+    const currentIndex = ref(0)
+
+    const store = useStore()
+
+    const searchHistory = computed(() => store.state.searchHistory)
+    const playHistory = computed(() => store.state.playHistory)
+
+    const { saveSearch } = useSearchHistory()
 
     function show() {
       visible.value = true
@@ -48,11 +98,34 @@ export default {
       visible.value = false
     }
 
+    function addQuery(key) {
+      query.value = key
+    }
+
+    function selectSongBySongList({ song }) {
+      addSong(song)
+    }
+
+    function selectSongBySuggest(song) {
+      addSong(song)
+      saveSearch(query.value)
+    }
+
+    function addSong(song) {
+      store.dispatch('addSong', song)
+    }
+
     return {
       visible,
       query,
       show,
-      hide
+      hide,
+      addQuery,
+      currentIndex,
+      searchHistory,
+      playHistory,
+      selectSongBySongList,
+      selectSongBySuggest
     }
   }
 }

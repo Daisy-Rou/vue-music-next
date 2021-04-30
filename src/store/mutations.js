@@ -48,6 +48,11 @@ const mutations = {
   // 设置搜索历史
   setSearchHistory(state, searches) {
     state.searchHistory = searches
+  },
+
+  // 设置播放歌曲记录
+  setPlayHistory(state, songs) {
+    state.playHistory = songs
   }
 }
 
